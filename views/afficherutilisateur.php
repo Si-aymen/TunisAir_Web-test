@@ -39,6 +39,31 @@
 	$utilisateurC=new UtilisateurC();
 	$listeUsers=$utilisateurC->afficherUtilisateurs();
 
+
+  $db=config::getConnexion();
+                                 
+  $sort="";
+  if(isset ($_GET['sort']))
+  {
+  if ($_GET['sort']=="a-z")
+  {
+      $sort="ASC";
+  }
+  if($_GET['sort']=="z-a")
+  {
+      $sort="DESC";
+  }
+}
+$listeUsers=$db->prepare("SELECT * FROM utilisateur ORDER BY Firstname $sort");
+$listeUsers->execute();
+if (isset($_GET['key'])) {
+$listeUsers= $utilisateurC->recherche($_GET['key']);
+} else 
+if (isset($_GET['key'])) {
+$listeUsers= $utilisateurC->recherche($_GET['key']);
+}                 
+
+
 ?>
 
 <body>
@@ -56,9 +81,11 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
+              
                 <a href="index.html" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>TUNISAIR</h3>
                 </a>
+                
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
                         <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
@@ -88,6 +115,15 @@
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
+                &nbsp; &nbsp;
+                <div class="search">
+                <form method="get" action="afficherutilisateur.php">
+                <div class="search">
+                    <input type="text" name="key" placeholder="Search..">
+                    <button type="submit"><img src="img/search.png" alt=""></button>
+                </div>
+                </form>
+                </div>
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -97,7 +133,7 @@
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">My Profile</a>
                             <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            <a href="../tunisair forntend/loginfront.php" class="dropdown-item">Log Out</a>
                         </div>
                     </div>
                 </div>
@@ -125,6 +161,19 @@
                 <div class="bg-light text-center rounded p-4">
                     <div class="table-responsive">
                         <a href="connexion.php"><i style="font-size: 26px; background-color:#F0FFFF; border-radius: 5px;">Ajouter un Utilisateur</i></a>
+                        <form action="afficherutilisateur.php" class="d-none d-md-flex ms-4" method="GET" >
+                        <button type="submit" class="btn btn-primary" id="basic">Sort by</button>
+            <select name="sort"  value="sort">
+                    <option value="" class="d-none d-md-flex ms-4" selected>---Select Option---</option>
+          <option value="a-z" <?php if(isset ($_GET['sort']) && $_GET['sort']=="a-z"){echo "selected";} ?>>firstname (ASC)</option>
+          <option value="z-a" <?php if(isset ($_GET['sort']) && $_GET['sort']=="z-a"){echo "selected";} ?>>firstname (DESC)</option>
+      </select>
+
+      
+     
+     
+            </form>
+
                         <h1>PNT</h1>
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
@@ -135,6 +184,7 @@
                                     <th scope="col">first name</th>
                                     <th scope="col">last name</th>
                                     <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
                                     <th scope="col">delete</th>
                                     <th scope="col">update</th>
                                 </tr>
@@ -153,6 +203,7 @@
 					<td><?PHP echo $user['Firstname']; ?></td>
 					<td><?PHP echo $user['Lastname']; ?></td>
 					<td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
 
           <td>  <input type="checkbox" id="show">
                <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
@@ -233,6 +284,7 @@ for($i=1;$i<=$pagesTotales;$i++){
                                     <th scope="col">first name</th>
                                     <th scope="col">last name</th>
                                     <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
                                     <th scope="col">delete</th>
                                     <th scope="col">update</th>
                                 </tr>
@@ -251,6 +303,7 @@ for($i=1;$i<=$pagesTotales;$i++){
           <td><?PHP echo $user['Firstname']; ?></td>
           <td><?PHP echo $user['Lastname']; ?></td>
           <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
 
           <td>  <input type="checkbox" id="show">
                <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
@@ -328,6 +381,7 @@ for($i=1;$i<=$pagesTotales;$i++){
                                     <th scope="col">first name</th>
                                     <th scope="col">last name</th>
                                     <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
                                     <th scope="col">delete</th>
                                     <th scope="col">update</th>
                                 </tr>
@@ -346,6 +400,513 @@ for($i=1;$i<=$pagesTotales;$i++){
           <td><?PHP echo $user['Firstname']; ?></td>
           <td><?PHP echo $user['Lastname']; ?></td>
           <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
+
+          <td>  <input type="checkbox" id="show">
+               <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
+               <div class="container">
+                 <form method="POST" action="supprimerUtilisateur.php">
+                   <h7>veuillez vous supprimer cette demande ?</h7><br>
+                <button type="submit" name="supprimer">supprimer</button>
+                <input type="hidden" value=<?PHP echo $user['Id']; ?> name="id">
+               </form>
+                  <label for="show" class="close-btn fas fa-times" title="close"></label>
+               </div>
+            </div>
+            </td>
+          <td>
+
+              <a href="modifierUtilisateur.php?id=<?PHP echo $user['Id']; ?>" ><i class="fa fa-edit" style="font-size: 26px;"></i></a>
+
+          </td>
+        </tr>
+        <?php  }?>
+      <?PHP
+        }
+      ?>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-end">
+                        <?php
+                        for($i=1;$i<=$pagesTotales;$i++){
+                            if($i == $pageCourante){
+                            ?>
+                            <li class="page-item"><a class="page-link"><?php echo $i.' '; ?></a></li>
+                            <?php
+                            }else{
+                              ?>
+                            <li class="page-item"><?php   echo '<a class="page-link" href="afficherutilisateur.php?page='.$i.'">'.$i.'</a> '; ?></li>
+                            <?php
+                          }
+                        }
+                        ?>
+                          </ul>
+                        </nav>
+        <br>
+        <br>
+                    </div>
+                </div>
+            </div>
+
+
+
+        <!-- Classe A -->
+
+            <div class="container-fluid pt-4 px-4">
+              <?php
+                                            $bdd= new PDO('mysql:host=localhost;dbname=tunisair;charset=utf8','root','');
+                                            $userParPage =6;
+                                            $userTotalReq=$bdd->query('SELECT Id FROM utilisateur where Corps="PNC"');
+                                            $userTotal=$userTotalReq->rowCount();
+                                            $pagesTotales=ceil($userTotal/$userParPage);
+                                            if(isset($_GET['page']) AND !empty($_GET['page']) AND $_GET['page'] > 0 AND $_GET['page']<= $pagesTotales){
+                                            $_GET['page']=intval($_GET['page']);
+                                            $pageCourante=$_GET['page'];
+                                            }else{
+                                                $pageCourante=1;
+                                            }
+
+                                            $depart=($pageCourante-1)*$userParPage;
+
+                                            ?>
+
+                <div class="bg-light text-center rounded p-4">
+                    <div class="table-responsive">
+                      <h1>Classe A</h1>
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                        <!--  <th scope="col">id</th> -->
+                                    <th scope="col">matricule</th>
+                                    <th scope="col">mot de passe</th>
+                                    <th scope="col">first name</th>
+                                    <th scope="col">last name</th>
+                                    <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
+                                    <th scope="col">delete</th>
+                                    <th scope="col">update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?PHP
+                            $listeUsers=$bdd->query('SELECT * FROM utilisateur ORDER BY Id DESC LIMIT '.$depart.','.$userParPage);
+
+        foreach($listeUsers as $user){
+      ?>
+        <tr>
+      <!--		<td><//?PHP echo $user['Id']; ?></td> -->
+      <?php if( $user['classe'] =='A') { ?>
+          <td><?PHP echo $user['Matricule']; ?></td>
+          <td><?PHP echo $user['Mdp']; ?></td>
+          <td><?PHP echo $user['Firstname']; ?></td>
+          <td><?PHP echo $user['Lastname']; ?></td>
+          <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
+
+          <td>  <input type="checkbox" id="show">
+               <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
+               <div class="container">
+                 <form method="POST" action="supprimerUtilisateur.php">
+                   <h7>veuillez vous supprimer cette demande ?</h7><br>
+                <button type="submit" name="supprimer">supprimer</button>
+                <input type="hidden" value=<?PHP echo $user['Id']; ?> name="id">
+               </form>
+                  <label for="show" class="close-btn fas fa-times" title="close"></label>
+               </div>
+            </div>
+            </td>
+          <td>
+
+              <a href="modifierUtilisateur.php?id=<?PHP echo $user['Id']; ?>" ><i class="fa fa-edit" style="font-size: 26px;"></i></a>
+
+          </td>
+        </tr>
+        <?php  }?>
+      <?PHP
+        }
+      ?>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-end">
+                        <?php
+                        for($i=1;$i<=$pagesTotales;$i++){
+                            if($i == $pageCourante){
+                            ?>
+                            <li class="page-item"><a class="page-link"><?php echo $i.' '; ?></a></li>
+                            <?php
+                            }else{
+                              ?>
+                            <li class="page-item"><?php   echo '<a class="page-link" href="afficherutilisateur.php?page='.$i.'">'.$i.'</a> '; ?></li>
+                            <?php
+                          }
+                        }
+                        ?>
+                          </ul>
+                        </nav>
+        <br>
+        <br>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        <!-- Classe B -->
+            <div class="container-fluid pt-4 px-4">
+              <?php
+                                            $bdd= new PDO('mysql:host=localhost;dbname=tunisair;charset=utf8','root','');
+                                            $userParPage =6;
+                                            $userTotalReq=$bdd->query('SELECT Id FROM utilisateur where Corps="PNC"');
+                                            $userTotal=$userTotalReq->rowCount();
+                                            $pagesTotales=ceil($userTotal/$userParPage);
+                                            if(isset($_GET['page']) AND !empty($_GET['page']) AND $_GET['page'] > 0 AND $_GET['page']<= $pagesTotales){
+                                            $_GET['page']=intval($_GET['page']);
+                                            $pageCourante=$_GET['page'];
+                                            }else{
+                                                $pageCourante=1;
+                                            }
+
+                                            $depart=($pageCourante-1)*$userParPage;
+
+                                            ?>
+
+                <div class="bg-light text-center rounded p-4">
+                    <div class="table-responsive">
+                      <h1>Classe B</h1>
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                        <!--  <th scope="col">id</th> -->
+                                    <th scope="col">matricule</th>
+                                    <th scope="col">mot de passe</th>
+                                    <th scope="col">first name</th>
+                                    <th scope="col">last name</th>
+                                    <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
+                                    <th scope="col">delete</th>
+                                    <th scope="col">update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?PHP
+                            $listeUsers=$bdd->query('SELECT * FROM utilisateur ORDER BY Id DESC LIMIT '.$depart.','.$userParPage);
+
+        foreach($listeUsers as $user){
+      ?>
+        <tr>
+      <!--		<td><//?PHP echo $user['Id']; ?></td> -->
+      <?php if( $user['classe'] =='B') { ?>
+          <td><?PHP echo $user['Matricule']; ?></td>
+          <td><?PHP echo $user['Mdp']; ?></td>
+          <td><?PHP echo $user['Firstname']; ?></td>
+          <td><?PHP echo $user['Lastname']; ?></td>
+          <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
+
+          <td>  <input type="checkbox" id="show">
+               <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
+               <div class="container">
+                 <form method="POST" action="supprimerUtilisateur.php">
+                   <h7>veuillez vous supprimer cette demande ?</h7><br>
+                <button type="submit" name="supprimer">supprimer</button>
+                <input type="hidden" value=<?PHP echo $user['Id']; ?> name="id">
+               </form>
+                  <label for="show" class="close-btn fas fa-times" title="close"></label>
+               </div>
+            </div>
+            </td>
+          <td>
+
+              <a href="modifierUtilisateur.php?id=<?PHP echo $user['Id']; ?>" ><i class="fa fa-edit" style="font-size: 26px;"></i></a>
+
+          </td>
+        </tr>
+        <?php  }?>
+      <?PHP
+        }
+      ?>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-end">
+                        <?php
+                        for($i=1;$i<=$pagesTotales;$i++){
+                            if($i == $pageCourante){
+                            ?>
+                            <li class="page-item"><a class="page-link"><?php echo $i.' '; ?></a></li>
+                            <?php
+                            }else{
+                              ?>
+                            <li class="page-item"><?php   echo '<a class="page-link" href="afficherutilisateur.php?page='.$i.'">'.$i.'</a> '; ?></li>
+                            <?php
+                          }
+                        }
+                        ?>
+                          </ul>
+                        </nav>
+        <br>
+        <br>
+                    </div>
+                </div>
+            </div>
+
+
+        <!-- Classe C -->
+
+            <div class="container-fluid pt-4 px-4">
+              <?php
+                                            $bdd= new PDO('mysql:host=localhost;dbname=tunisair;charset=utf8','root','');
+                                            $userParPage =6;
+                                            $userTotalReq=$bdd->query('SELECT Id FROM utilisateur where Corps="PNC"');
+                                            $userTotal=$userTotalReq->rowCount();
+                                            $pagesTotales=ceil($userTotal/$userParPage);
+                                            if(isset($_GET['page']) AND !empty($_GET['page']) AND $_GET['page'] > 0 AND $_GET['page']<= $pagesTotales){
+                                            $_GET['page']=intval($_GET['page']);
+                                            $pageCourante=$_GET['page'];
+                                            }else{
+                                                $pageCourante=1;
+                                            }
+
+                                            $depart=($pageCourante-1)*$userParPage;
+
+                                            ?>
+
+                <div class="bg-light text-center rounded p-4">
+                    <div class="table-responsive">
+                      <h1>Classe C</h1>
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                        <!--  <th scope="col">id</th> -->
+                                    <th scope="col">matricule</th>
+                                    <th scope="col">mot de passe</th>
+                                    <th scope="col">first name</th>
+                                    <th scope="col">last name</th>
+                                    <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
+                                    <th scope="col">delete</th>
+                                    <th scope="col">update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?PHP
+                            $listeUsers=$bdd->query('SELECT * FROM utilisateur ORDER BY Id DESC LIMIT '.$depart.','.$userParPage);
+
+        foreach($listeUsers as $user){
+      ?>
+        <tr>
+      <!--		<td><//?PHP echo $user['Id']; ?></td> -->
+      <?php if( $user['classe'] =='C') { ?>
+          <td><?PHP echo $user['Matricule']; ?></td>
+          <td><?PHP echo $user['Mdp']; ?></td>
+          <td><?PHP echo $user['Firstname']; ?></td>
+          <td><?PHP echo $user['Lastname']; ?></td>
+          <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
+
+          <td>  <input type="checkbox" id="show">
+               <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
+               <div class="container">
+                 <form method="POST" action="supprimerUtilisateur.php">
+                   <h7>veuillez vous supprimer cette demande ?</h7><br>
+                <button type="submit" name="supprimer">supprimer</button>
+                <input type="hidden" value=<?PHP echo $user['Id']; ?> name="id">
+               </form>
+                  <label for="show" class="close-btn fas fa-times" title="close"></label>
+               </div>
+            </div>
+            </td>
+          <td>
+
+              <a href="modifierUtilisateur.php?id=<?PHP echo $user['Id']; ?>" ><i class="fa fa-edit" style="font-size: 26px;"></i></a>
+
+          </td>
+        </tr>
+        <?php  }?>
+      <?PHP
+        }
+      ?>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-end">
+                        <?php
+                        for($i=1;$i<=$pagesTotales;$i++){
+                            if($i == $pageCourante){
+                            ?>
+                            <li class="page-item"><a class="page-link"><?php echo $i.' '; ?></a></li>
+                            <?php
+                            }else{
+                              ?>
+                            <li class="page-item"><?php   echo '<a class="page-link" href="afficherutilisateur.php?page='.$i.'">'.$i.'</a> '; ?></li>
+                            <?php
+                          }
+                        }
+                        ?>
+                          </ul>
+                        </nav>
+        <br>
+        <br>
+                    </div>
+                </div>
+            </div>
+
+
+        <!-- Classe D -->
+            <div class="container-fluid pt-4 px-4">
+              <?php
+                                            $bdd= new PDO('mysql:host=localhost;dbname=tunisair;charset=utf8','root','');
+                                            $userParPage =6;
+                                            $userTotalReq=$bdd->query('SELECT Id FROM utilisateur where Corps="PNC"');
+                                            $userTotal=$userTotalReq->rowCount();
+                                            $pagesTotales=ceil($userTotal/$userParPage);
+                                            if(isset($_GET['page']) AND !empty($_GET['page']) AND $_GET['page'] > 0 AND $_GET['page']<= $pagesTotales){
+                                            $_GET['page']=intval($_GET['page']);
+                                            $pageCourante=$_GET['page'];
+                                            }else{
+                                                $pageCourante=1;
+                                            }
+
+                                            $depart=($pageCourante-1)*$userParPage;
+
+                                            ?>
+
+                <div class="bg-light text-center rounded p-4">
+                    <div class="table-responsive">
+                      <h1>Classe D</h1>
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                        <!--  <th scope="col">id</th> -->
+                                    <th scope="col">matricule</th>
+                                    <th scope="col">mot de passe</th>
+                                    <th scope="col">first name</th>
+                                    <th scope="col">last name</th>
+                                    <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
+                                    <th scope="col">delete</th>
+                                    <th scope="col">update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?PHP
+                            $listeUsers=$bdd->query('SELECT * FROM utilisateur ORDER BY Id DESC LIMIT '.$depart.','.$userParPage);
+
+        foreach($listeUsers as $user){
+      ?>
+        <tr>
+      <!--		<td><//?PHP echo $user['Id']; ?></td> -->
+      <?php if( $user['classe'] =='D') { ?>
+          <td><?PHP echo $user['Matricule']; ?></td>
+          <td><?PHP echo $user['Mdp']; ?></td>
+          <td><?PHP echo $user['Firstname']; ?></td>
+          <td><?PHP echo $user['Lastname']; ?></td>
+          <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
+
+          <td>  <input type="checkbox" id="show">
+               <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>
+               <div class="container">
+                 <form method="POST" action="supprimerUtilisateur.php">
+                   <h7>veuillez vous supprimer cette demande ?</h7><br>
+                <button type="submit" name="supprimer">supprimer</button>
+                <input type="hidden" value=<?PHP echo $user['Id']; ?> name="id">
+               </form>
+                  <label for="show" class="close-btn fas fa-times" title="close"></label>
+               </div>
+            </div>
+            </td>
+          <td>
+
+              <a href="modifierUtilisateur.php?id=<?PHP echo $user['Id']; ?>" ><i class="fa fa-edit" style="font-size: 26px;"></i></a>
+
+          </td>
+        </tr>
+        <?php  }?>
+      <?PHP
+        }
+      ?>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation example">
+                          <ul class="pagination justify-content-end">
+                        <?php
+                        for($i=1;$i<=$pagesTotales;$i++){
+                            if($i == $pageCourante){
+                            ?>
+                            <li class="page-item"><a class="page-link"><?php echo $i.' '; ?></a></li>
+                            <?php
+                            }else{
+                              ?>
+                            <li class="page-item"><?php   echo '<a class="page-link" href="afficherutilisateur.php?page='.$i.'">'.$i.'</a> '; ?></li>
+                            <?php
+                          }
+                        }
+                        ?>
+                          </ul>
+                        </nav>
+        <br>
+        <br>
+                    </div>
+                </div>
+            </div>
+
+
+
+        <!-- Classe E -->
+            <div class="container-fluid pt-4 px-4">
+              <?php
+                                            $bdd= new PDO('mysql:host=localhost;dbname=tunisair;charset=utf8','root','');
+                                            $userParPage =6;
+                                            $userTotalReq=$bdd->query('SELECT Id FROM utilisateur where Corps="PNC"');
+                                            $userTotal=$userTotalReq->rowCount();
+                                            $pagesTotales=ceil($userTotal/$userParPage);
+                                            if(isset($_GET['page']) AND !empty($_GET['page']) AND $_GET['page'] > 0 AND $_GET['page']<= $pagesTotales){
+                                            $_GET['page']=intval($_GET['page']);
+                                            $pageCourante=$_GET['page'];
+                                            }else{
+                                                $pageCourante=1;
+                                            }
+
+                                            $depart=($pageCourante-1)*$userParPage;
+
+                                            ?>
+
+                <div class="bg-light text-center rounded p-4">
+                    <div class="table-responsive">
+                      <h1>Classe E</h1>
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                        <!--  <th scope="col">id</th> -->
+                                    <th scope="col">matricule</th>
+                                    <th scope="col">mot de passe</th>
+                                    <th scope="col">first name</th>
+                                    <th scope="col">last name</th>
+                                    <th scope="col">corps</th>
+                                    <th scope="col">classe</th>
+                                    <th scope="col">delete</th>
+                                    <th scope="col">update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?PHP
+                            $listeUsers=$bdd->query('SELECT * FROM utilisateur ORDER BY Id DESC LIMIT '.$depart.','.$userParPage);
+
+        foreach($listeUsers as $user){
+      ?>
+        <tr>
+      <!--		<td><//?PHP echo $user['Id']; ?></td> -->
+      <?php if( $user['classe'] =='E') { ?>
+          <td><?PHP echo $user['Matricule']; ?></td>
+          <td><?PHP echo $user['Mdp']; ?></td>
+          <td><?PHP echo $user['Firstname']; ?></td>
+          <td><?PHP echo $user['Lastname']; ?></td>
+          <td><?PHP echo $user['Corps'];; ?></td>
+          <td><?PHP echo $user['classe'];; ?></td>
 
           <td>  <input type="checkbox" id="show">
                <label for="show" class="show-btn"><i class="fa fa-trash"></i></label>

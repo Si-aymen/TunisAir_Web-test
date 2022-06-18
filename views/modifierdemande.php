@@ -141,8 +141,7 @@
 
 		?>
 		<form action="" method="POST">
-            <table align="center">
-                <tr>
+           
 
                   <!--  <td>
                         <label for="id">Id:
@@ -150,60 +149,34 @@
                     </td> -->
             <!--        <td>
 						<input type="text" name="id" id="id"  value = "<//?php echo $demande['Id']; ?>" disabled> -->
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label for="matricule">matricule:
-						</label>
-					</td>
-					<td>
-						<input type="text" name="matricule" id="matricule" value = "<?php echo $demande['Matricule']; ?>">
-					</td>
-				</tr>
-                <tr>
-                    <td>
-                        <label for="mois">mois:
-                        </label>
-                    </td>
-                    <td><input type="date" name="mois" id="mois" value = "<?php echo $demande['Mois']; ?>"></td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <label for="type">type:
-                        </label>
-                    </td>
-                    <td>
-
-												<select name="type" id="type">
-	<option value="<?php echo $demande['Type']; ?>">PNT</option>
+					
+						<label class="form-label" for="form2Example1">Matricule</label>
+<div class="form-outline mb-4">
+<input type="text" id="matricule" name ="matricule" class="form-control"   value = "<?php echo $demande['Matricule']; ?> " />
+</div>
+<label class="form-label" for="form2Example1">mois</label>
+<div class="form-outline mb-4">
+<input type="date" id="mois" name ="mois" class="form-control"   value = "<?php echo $demande['Mois']; ?>" />
+</div>
+<label class="form-label" for="form2Example1">type </label>
+  <select class="form-select"  name="type" id="type" aria-label="Default select example">
+  <option value="<?php echo $demande['Type']; ?>">PNT</option>
 	<option value="<?php echo $demande['Type']; ?>">PNC</option>
+  <option value="ADMIN">ADMIN</option>
 </select>
-                    </td>
-                </tr>
-                <tr>
+<label class="form-label" for="form2Example1">Description</label>
+<div class="form-outline mb-4">
+<input type="text" id="description" name ="description" class="form-control"   value = "<?php echo $demande['Description']; ?>" />
+</div>
 
-                    <td>
-                        <label for="description">description:
-                        </label>
-                    </td>
-                    <td>
-                        <input type="text" name="description" id="description" value = "<?php echo $demande['Description']; ?>">
-                    </td>
-                </tr>
+		
+<br>              
+                      <pre>                                              <input class="btn btn-primary" type="submit" value="envoyer">                     <input class="btn btn-primary" type="reset" value="annuler"> <pre>
+                        
 
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type="submit" value="Modifier" name = "modifer">
-                    </td>
-                    <td>
-                        <input type="reset" value="Annuler" >
-                    </td>
-                </tr>
-            </table>
+           
+             
+              
         </form>
 		<?php
 		}

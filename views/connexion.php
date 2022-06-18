@@ -14,21 +14,24 @@
         isset($_POST["mdp"]) &&
         isset($_POST["firstname"]) &&
         isset($_POST["lastname"]) &&
-        isset($_POST["corps"])
+        isset($_POST["corps"])&&
+        isset($_POST["classe"])
     ) {
         if (
             !empty($_POST["matricule"]) &&
             !empty($_POST["mdp"]) &&
             !empty($_POST["firstname"]) &&
             !empty($_POST["lastname"]) &&
-            !empty($_POST["corps"])
+            !empty($_POST["corps"])&&
+            !empty($_POST["classe"])
         ) {
             $user = new Utilisateur(
                 $_POST['matricule'],
                 $_POST['mdp'],
                 $_POST['firstname'],
                 $_POST['lastname'],
-                $_POST['corps']
+                $_POST['corps'],
+                $_POST['classe']
             );
             $userC->ajouterUtilisateur($user);
             header('Location:afficherutilisateur.php');
@@ -43,6 +46,15 @@
 <html lang="en">
 
 <head>
+<style>
+		.error {
+			color: red;
+      position: relative ;
+      left :20px;
+
+		}
+	</style>
+    
     <meta charset="utf-8">
     <title>DASHMIN - Bootstrap Admin Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -72,6 +84,38 @@
     <link href="css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="css.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script>
+        function validateForm2() {
+			var letters = /^[A-Za-z]+$/;
+			var dateNow = new Date();
+			var mat = document.getElementById("matricule").value;
+			var md = document.getElementById("mdp").value;
+			var fi = document.getElementById("firstname").value;
+			var la = document.getElementById("lastname").value;
+
+			var errormat = document.getElementById('errormat');
+			var errormdp = document.getElementById('errormdp');
+			var errorfirst = document.getElementById('errorfirst');
+			var errorlast = document.getElementById('errorlast');
+			 
+      if (isNaN(mat)==true) {
+        errormat.innerHTML="la matricule ne doit pas etre une chaine de caractere"
+                return false ;
+        return false ;
+			}
+      else if(isNaN(fi)==false)
+      {
+        errorfirst.innerHTML="le nom ne doit pas etre numerique"
+        return false ;
+      }
+      else if(isNaN(la)==false)
+      {
+        errorlast.innerHTML="le prenom ne doit pas etre numerique"
+        return false ;
+      }
+    }
+</script>
+        </script>
 </head>
 	<body>
 		<div class="container-xxl position-relative bg-white d-flex p-0">
@@ -142,68 +186,50 @@
             <?php echo $error; ?>
         </div>
 
-        <form action="" method="POST">
-            <table border="0" align="center">
+        <form action="" method="POST" onSubmit="return validateForm2()">
 
-                <tr>
+            <div class="form-outline mb-4">
+            <label class="form-label" for="form2Example1">Matricule </label>
+    <input type="text" id="matricule" name ="matricule" class="form-control" />
+  </div>
+  <p id="errormat" class="error"></p>
+  <label class="form-label" for="form2Example1">Mot de passe </label>
+  <div class="form-outline mb-4">
+    <input type="text" id="mdp" name ="mdp" class="form-control" />
+  </div>
+  <p id="errormdp" class="error"></p>
 
-                    <td>
-                        <label for="matricule">matricule:
-                        </label>
-                    </td>
-                    <td><input type="text" name="matricule" id="matricule" ></td>
-                </tr>
-                <tr>
+  <label class="form-label" for="form2Example1">Nom </label>
+  <div class="form-outline mb-4">
+    <input type="text" id="firstname" name ="firstname" class="form-control"  />
+  </div>
+  <p id="errorfirst" class="error"></p>
 
-                    <td>
-                        <label for="mdp">mot de passe :
-                        </label>
-                    </td>
-                    <td><input type="password" name="mdp" id="mdp" ></td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="firstname">firstname:
-                        </label>
-                    </td>
-                    <td><input type="text" name="firstname" id="firstname" ></td>
-                </tr>
+  <label class="form-label" for="form2Example1">Prenom </label>
+  <div class="form-outline mb-4">
+    <input type="text" id="lastname" name ="lastname" class="form-control" />
+  </div>
+  <p id="errorlast" class="error"></p>
+  <label class="form-label" for="form2Example1">Corps </label>
+  <select class="form-select"  name="corps" id="corps" aria-label="Default select example">
+  <option value="PNT">PNT</option>
+  <option value="PNC">PNC</option>
+  <option value="ADMIN">ADMIN</option>
+</select>
 
-                <tr>
-                    <td>
-                        <label for="lastname">lastname :
-                        </label>
-                    </td>
-                    <td>
-                        <input type="text" name="lastname" id="lastname" >
-                    </td>
-                </tr>
-                <tr>
+<label class="form-label" for="form2Example1">classe </label>
+  <select class="form-select"  name="corps" id="corps" aria-label="Default select example">
+  <option value="A">A</option>
+  <option value="B">B</option>
+  <option value="B">C</option>
+</select>
+    
+    <br>              
+                      <pre>                    <input class="btn btn-primary" type="submit" value="envoyer">                     <input class="btn btn-primary" type="reset" value="annuler"> <pre>
+                        
 
-                    <td>
-                        <label for="corps">corps:
-                        </label>
-                    </td>
-                    <td>
-      <select name="corps" id="corps">
-      <option value="PNT">PNT</option>
-      <option value="PNC">PNC</option>
-      <option value="admin">ADMIN</option>
-    </select>
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type="submit" value="Envoyer">
-                    </td>
-                    <td>
-                        <input type="reset" value="Annuler" >
-                    </td>
-                </tr>
-            </table>
+                   
+                   
         </form>
 
 <!-- JavaScript Libraries -->

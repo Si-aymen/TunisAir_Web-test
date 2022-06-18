@@ -1,54 +1,19 @@
-<?php
+<?PHP
 session_start();
-                      include_once '../model/demande.php';
-                      include_once '../controller/DemandeC.php';
+include_once '../controller/DemandeC.php';
+include_once "../controller/UtilisateurC.php";
 
-                      $error = "";
-
-                      // create user
-                      $demande = null;
-
-                      // create an instance of the controller
-                      $demandeC = new DemandeC();
-                      if (
-                          isset($_POST["matricule"]) &&
-                          isset($_POST["mois"]) &&
-                          isset($_POST["type"]) &&
-                          isset($_POST["description"])
-                      ) {
-                        $date = DateTime::createFromFormat("Y-m-d", $_POST['mois']);
-                        $day = $date->format("d");
-                        if (    $demandeC->sommeDemande($_POST["matricule"])<5){
-                          if($day<"13"){
-                          if (
-                              !empty($_POST["matricule"]) &&
-                              !empty($_POST["mois"]) &&
-                              !empty($_POST["type"]) &&
-                              !empty($_POST["description"])
-                          ) {
-                              $demande = new Demande(
-                                  $_POST['matricule'],
-                                  $_POST['mois'],
-                                  $_POST['type'],
-                                  $_POST['description']
-                              );
-                      $demandeC->ajouterDemande($demande);
-                              header('Location:demande.php');
-                          }
-                          else
-                              $error = "Missing information";
-                            }else{
-                              echo '<script>alert("superieur!")</script>';
-                            }
-                            }else
-                            {
-                              echo '<script>alert("maximum 5 demande!")</script>';
-                            }
-                      }
-
-                  ?>
+$demandeC=new DemandeC();
 
 
+    $userC = new UtilisateurC();
+	$user2=$userC->recupererUtilisateurmat($_SESSION['login1']);
+    
+   $matricule=$user2["Matricule"];
+    $listeUsers=$demandeC->recupererDemandematricule($matricule);
+	
+
+?>
 <!doctype html>
 <html lang="en">
     <head>
@@ -72,6 +37,28 @@ session_start();
         <link href="css/bootstrap-icons.css" rel="stylesheet">
 
         <link href="css/templatemo-leadership-event.css" rel="stylesheet">
+				<link type="text/css" rel="stylesheet" href="front.css"/>
+         <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
 
 <!--
 
@@ -84,7 +71,7 @@ https://templatemo.com/tm-575-leadership-event
 
     <body>
 
-        <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
             <div class="container">
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +96,7 @@ https://templatemo.com/tm-575-leadership-event
                         </li>
 
                         <li class="nav-item">
-                  <a class="nav-link click-scroll" href="affichagedemandefront.php">liste des demandes</a>
+                            <a class="nav-link click-scroll" href="affichagedemandefront.php">liste des demandes</a>
                         </li>
 
                         <li class="nav-item">
@@ -136,44 +123,53 @@ https://templatemo.com/tm-575-leadership-event
         <main>
             <section class="contact section-padding" id="section_7">
                 <div class="container">
-                    <div class="row">
+				<center>
+								<table border=1 align = 'center' class="content-table">
+									<tr>
+										<th>matricule</th>
+										<th>mois</th>
+										<th>type</th>
+										<th>description</th>
+										<th>delete</th>
+										<th>modifier</th>
+									</tr>
 
-                        <div class="col-lg-8 col-12 mx-auto">
-                            <form class="custom-form contact-form bg-white shadow-lg" action="#" method="post" role="form">
-                                <h2>Ajouter Votre Demande</h2>
-                                <div id="error">
-                                    <?php echo $error; ?>
-                                </div>
+									<?PHP
+										foreach($listeUsers as $demande){
+									?>
+										<tr>
+											<td><?PHP echo $demande['Matricule']; ?></td>
+											<td><?PHP echo $demande['Mois']; ?></td>
+											<td><?PHP echo $demande['Type']; ?></td>
+											<td><?PHP echo $demande['Description']; ?></td>
+											<td>
+												<form method="POST" action="supprimerdemandefront.php">
+                                                <button type="submit" style="color:#0dcaf0; font-size: 26px; border:none;" name="supprimer"><i class="fa fa-trash"></i></button>
+												<input type="hidden" value=<?PHP echo $demande['Id']; ?> name="id">
+												</form>
+											</td>
+											<td>
+												<a href="modifierdemandefront.php?id=<?PHP echo $demande['Id']; ?>"> <i class="fa fa-edit" style="color:#0dcaf0; font-size: 26px;"></i> </a>
+											</td>
+										</tr>
+									<?PHP
+										}
+									?>
+								</table>
+								</center>
 
-                                <div class="row">
-                                <form action="" method="POST">
-                                    <div class="col-lg-4 col-md-4 col-12">
-                                        <input type="text" name="matricule" id="matricule" class="form-control" placeholder="matricule" required="">
-                                    </div>
 
-                                    <div class="col-lg-4 col-md-4 col-12">
-                                        <input type="date" name="mois" id="mois" class="form-control" placeholder="mois" required="">
-                                    </div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
-                                    <div class="col-lg-4 col-md-4 col-12">
-                                        <select name="type" id="type"  class="form-control" >
-                                            <option value="NULL">choisir</option>
-                                            <option value="PNC">PNC</option>
-                                            <option value="PNT">PNT</option>
-                                          </select>
-                                    </div>
 
-                                    <div class="col-12">
-                                        <textarea class="form-control" rows="5" id="description" name="description" placeholder="description"></textarea>
 
-                                        <button type="submit" class="form-control">Envoyer</button><br>
-                                    </div>
-                                          </form>
-                                </div>
-                            </form>
-                        </div>
-
-                    </div>
                 </div>
             </section>
 

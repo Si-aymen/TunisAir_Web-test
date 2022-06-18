@@ -5,8 +5,8 @@
 	class UtilisateurC {
 
 		function ajouterUtilisateur($Utilisateur){
-			$sql="INSERT INTO Utilisateur (matricule,mdp, firstname, lastname, corps)
-			VALUES (:matricule,:mdp,:firstname,:lastname, :corps)";
+			$sql="INSERT INTO Utilisateur (matricule,mdp, firstname, lastname, corps, classe)
+			VALUES (:matricule,:mdp,:firstname,:lastname,:corps,:classe)";
 			$db = config::getConnexion();
 			try{
 				$query = $db->prepare($sql);
@@ -16,7 +16,8 @@
 					'mdp' => $Utilisateur->getMdp(),
 					'firstname' => $Utilisateur->getFirstname(),
 					'lastname' => $Utilisateur->getLastname(),
-					'corps' => $Utilisateur->getCorps()
+					'corps' => $Utilisateur->getCorps(),
+					'classe' => $Utilisateur->getclasse()
 				]);
 			}
 			catch (Exception $e){
@@ -89,6 +90,85 @@
 			}
 		}
 
+		function recupererUtilisateurmat($matricule){
+			$sql="SELECT * from Utilisateur where matricule=$matricule";
+			$db = config::getConnexion();
+			try{
+				$query=$db->prepare($sql);
+				$query->execute();
+
+				$user=$query->fetch();
+				return $user;
+			}
+			catch (Exception $e){
+				die('Erreur: '.$e->getMessage());
+			}
+		}
+
+	 function connexionUser($matricule,$mdp)
+        {
+            $sql="SELECT * FROM Utilisateur WHERE username='" .$matricule. "' and mdp='".$mdp."'";
+            $db=config::getConnexion();
+            try{
+                $query=$db->prepare($sql);
+                $query->execute();
+                $count=$query->rowCount();
+                if($count==0)
+                {
+                    $message ="incorrect";
+                }else{
+                    $x=$query->fetch();
+                    $message=$x['matricule'];
+                }
+            }
+            catch(Exception $e){
+                $message="".$e->getMessage();
+            }
+            return $message;
+
+
+        }
+
+		public function recherche($key)
+		{
+			$sql = "SELECT * FROM utilisateur WHERE Matricule LIKE '%$key%' OR Lastname LIKE '%$key%' OR Mdp LIKE '%$key%'";
+			$db = config::getConnexion() ;
+			try {
+				$liste = $db->query($sql);
+				return $liste;
+			} catch (Exception $e) {
+				die('Erreur: ' .$e->getMessage());
+			}
+		}
+		
+		function classe_R($Utilisateur, $id){
+
+			try {
+				$db = config::getConnexion();
+				$query = $db->prepare(
+					'UPDATE Utilisateur SET
+						matricule = :matricule,
+						mdp = :mdp,
+						firstname = :firstname,
+						lastname = :lastname,
+						corps = :corps,
+						classe = :classe
+					WHERE id = :id'
+				);
+				$query->execute([
+					'matricule' => $Utilisateur->getMatricule(),
+					'mdp' => $Utilisateur->getMdp(),
+					'firstname' => $Utilisateur->getFirstname(),
+					'lastname' => $Utilisateur->getlastname(),
+					'corps' => $Utilisateur->getCorps(),
+					'classe' => $Utilisateur->getclasse(),
+					'id' => $id
+				]);
+				echo $query->rowCount() . " records UPDATED successfully <br>";
+			} catch (PDOException $e) {
+				$e->getMessage();
+			}
+		}
 
 
 	}

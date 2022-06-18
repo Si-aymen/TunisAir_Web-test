@@ -39,6 +39,37 @@
 	$demandeC=new DemandeC();
 	$listeUsers=$demandeC->afficherDemande();
 
+
+    $db=config::getConnexion();
+                                 
+    $sort="";
+    if(isset ($_GET['sort']))
+    {
+    if ($_GET['sort']=="a-z")
+    {
+        $sort="ASC";
+    }
+    if($_GET['sort']=="z-a")
+    {
+        $sort="DESC";
+    }
+}
+$listeUsers=$db->prepare("SELECT * FROM demande ORDER BY matricule $sort");
+$listeUsers->execute();
+
+
+
+
+
+if (isset($_GET['key'])) {
+$listeUsers= $demandeC->recherche($_GET['key']);
+} else 
+if (isset($_GET['key'])) {
+$listeUsers= $demandeC->recherche($_GET['key']);
+} else                   
+  
+
+
 ?>
 
 <body>
@@ -124,6 +155,18 @@
                                             ?>
                 <div class="bg-light text-center rounded p-4">
                     <div class="table-responsive">
+                    <form action="afficherdemande.php" class="d-none d-md-flex ms-4" method="GET" >
+                        <button type="submit" class="btn btn-primary" id="basic">Sort by</button>
+            <select name="sort"  value="sort">
+                    <option value="" class="d-none d-md-flex ms-4" selected>---Select Option---</option>
+          <option value="a-z" <?php if(isset ($_GET['sort']) && $_GET['sort']=="a-z"){echo "selected";} ?>>firstname (ASC)</option>
+          <option value="z-a" <?php if(isset ($_GET['sort']) && $_GET['sort']=="z-a"){echo "selected";} ?>>firstname (DESC)</option>
+      </select>
+
+      
+     
+     
+            </form>
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
                               <h3>Nombres des demandes:<?php echo $demandeC->calculerDemande(); ?></h3>
@@ -196,7 +239,6 @@
                         </nav>
         <br>
         <br>
-                        <a href="ajouterDemande.php"><i style="font-size: 26px; background-color:#F0FFFF; border-radius: 5px;">Ajouter une demande</i></a>
                     </div>
                 </div>
             </div>

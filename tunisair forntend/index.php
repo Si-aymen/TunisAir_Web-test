@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!doctype html>
 <html lang="en">
     <head>
@@ -58,11 +61,11 @@ https://templatemo.com/tm-575-leadership-event
                       </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_3">Speakers</a>
+                            <a class="nav-link click-scroll" href="affichagedemandefront.php">liste des demandes</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_4">Schedules</a>
+                            <a class="nav-link click-scroll" href="Schedules/Schedules.php">Schedules</a>
                         </li>
 
                         <li class="nav-item">
@@ -74,7 +77,7 @@ https://templatemo.com/tm-575-leadership-event
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_7">Contact</a>
+                            <a class="nav-link click-scroll" href="logout.php">logout</a>
                         </li>
                     </ul>
                 <div>

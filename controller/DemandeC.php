@@ -1,6 +1,6 @@
 <?PHP
-	include "../config.php";
 	require_once '../Model/Demande.php';
+	require_once 'UtilisateurC.php';
 
 	class DemandeC {
 
@@ -22,6 +22,7 @@
 				echo 'Erreur: '.$e->getMessage();
 			}
 		}
+
 
 			function afficherDemande(){
 
@@ -101,6 +102,33 @@
 		        return $count;
 		        // print $count;
 		    }
+
+		
+			function  recupererDemandematricule($matricule){
+
+				$sql="SELECT * FROM Demande where Matricule=$matricule";
+				$db = config::getConnexion();
+				try{
+					$liste = $db->query($sql);
+					return $liste;
+				}
+				catch (Exception $e){
+					die('Erreur: '.$e->getMessage());
+				}
+			}
+
+
+			public function recherche($key)
+			{
+				$sql = "SELECT * FROM demande WHERE Matricule LIKE '%$key%' OR Matricule LIKE '%$key%' OR Mois LIKE '%$key%'";
+				$db = config::getConnexion() ;
+				try {
+					$liste = $db->query($sql);
+					return $liste;
+				} catch (Exception $e) {
+					die('Erreur: ' . $e->getMessage());
+				}
+			}
 
 
 

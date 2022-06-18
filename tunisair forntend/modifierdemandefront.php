@@ -1,62 +1,49 @@
 <?php
 session_start();
-                      include_once '../model/demande.php';
-                      include_once '../controller/DemandeC.php';
+	include "../controller/DemandeC.php";
+	include_once '../Model/Demande.php';
 
-                      $error = "";
+	$demandeC = new DemandeC();
+	$error = "";
 
-                      // create user
-                      $demande = null;
-
-                      // create an instance of the controller
-                      $demandeC = new DemandeC();
-                      if (
-                          isset($_POST["matricule"]) &&
-                          isset($_POST["mois"]) &&
-                          isset($_POST["type"]) &&
-                          isset($_POST["description"])
-                      ) {
-                        $date = DateTime::createFromFormat("Y-m-d", $_POST['mois']);
-                        $day = $date->format("d");
-                        if (    $demandeC->sommeDemande($_POST["matricule"])<5){
-                          if($day<"13"){
-                          if (
-                              !empty($_POST["matricule"]) &&
-                              !empty($_POST["mois"]) &&
-                              !empty($_POST["type"]) &&
-                              !empty($_POST["description"])
-                          ) {
-                              $demande = new Demande(
-                                  $_POST['matricule'],
-                                  $_POST['mois'],
-                                  $_POST['type'],
-                                  $_POST['description']
-                              );
-                      $demandeC->ajouterDemande($demande);
-                              header('Location:demande.php');
-                          }
-                          else
-                              $error = "Missing information";
-                            }else{
-                              echo '<script>alert("superieur!")</script>';
-                            }
-                            }else
-                            {
-                              echo '<script>alert("maximum 5 demande!")</script>';
-                            }
-                      }
-
-                  ?>
+	if (
+		isset($_POST["matricule"]) &&
+        isset($_POST["mois"]) &&
+        isset($_POST["type"]) &&
+        isset($_POST["description"])
+	){
+		if (
+            !empty($_POST["matricule"]) &&
+            !empty($_POST["mois"]) &&
+            !empty($_POST["type"]) &&
+            !empty($_POST["description"])
+        ) {
+            $demande = new Demande(
+                $_POST['matricule'],
+                $_POST['mois'],
+                $_POST['type'],
+									$_POST['description']
+			);
 
 
-<!doctype html>
+            $demandeC->modifierDemande($demande, $_GET['id']);
+            header('refresh:0;url=affichagedemandefront.php');
+        }
+        else
+            $error = "Missing information";
+	}
+
+?>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <meta name="description" content="">
-        <meta name="author" content="">
+<head>
+    <meta charset="utf-8">
+    <title>DASHMIN - Bootstrap Admin Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <meta charset="utf-8">
 
         <title>Leadership Event HTML5 Bootstrap v5 Template</title>
 
@@ -72,19 +59,9 @@ session_start();
         <link href="css/bootstrap-icons.css" rel="stylesheet">
 
         <link href="css/templatemo-leadership-event.css" rel="stylesheet">
-
-<!--
-
-TemplateMo 575 Leadership Event
-
-https://templatemo.com/tm-575-leadership-event
-
--->
-    </head>
-
-    <body>
-
-        <nav class="navbar navbar-expand-lg">
+</head>
+	<body>
+    <nav class="navbar navbar-expand-lg">
             <div class="container">
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +86,7 @@ https://templatemo.com/tm-575-leadership-event
                         </li>
 
                         <li class="nav-item">
-                  <a class="nav-link click-scroll" href="affichagedemandefront.php">liste des demandes</a>
+                            <a class="nav-link click-scroll" href="affichagedemandefront.php">liste des demandes</a>
                         </li>
 
                         <li class="nav-item">
@@ -132,53 +109,50 @@ https://templatemo.com/tm-575-leadership-event
 
             </div>
         </nav>
+        
+        <div id="error">
+            <?php echo $error; ?>
+        </div>
 
-        <main>
-            <section class="contact section-padding" id="section_7">
+		<?php
+			if (isset($_GET['id'])){
+				$demande = $demandeC->recupererDemande($_GET['id']);
+
+		?>
+        <section class="contact section-padding" id="section_7">
                 <div class="container">
                     <div class="row">
 
                         <div class="col-lg-8 col-12 mx-auto">
-                            <form class="custom-form contact-form bg-white shadow-lg" action="#" method="post" role="form">
-                                <h2>Ajouter Votre Demande</h2>
-                                <div id="error">
-                                    <?php echo $error; ?>
-                                </div>
-
+                            <form class="custom-form contact-form bg-white shadow-lg" action="" method="POST" role="form">
+                                <h2>Modifier demande</h2>
                                 <div class="row">
-                                <form action="" method="POST">
                                     <div class="col-lg-4 col-md-4 col-12">
-                                        <input type="text" name="matricule" id="matricule" class="form-control" placeholder="matricule" required="">
+                                        <input type="text" name="matricule" id="matricule" class="form-control" value = "<?php echo $demande['Matricule']; ?>">
                                     </div>
-
                                     <div class="col-lg-4 col-md-4 col-12">
-                                        <input type="date" name="mois" id="mois" class="form-control" placeholder="mois" required="">
+                                        <input type="date" name="mois" id="mois" class="form-control" value = "<?php echo $demande['Mois']; ?>">
                                     </div>
-
                                     <div class="col-lg-4 col-md-4 col-12">
                                         <select name="type" id="type"  class="form-control" >
-                                            <option value="NULL">choisir</option>
-                                            <option value="PNC">PNC</option>
-                                            <option value="PNT">PNT</option>
-                                          </select>
+                                        <option value="<?php echo $demande['Type']; ?>">PNT</option>
+	                                    <option value="<?php echo $demande['Type']; ?>">PNC</option>
+                                        </select>
                                     </div>
-
                                     <div class="col-12">
-                                        <textarea class="form-control" rows="5" id="description" name="description" placeholder="description"></textarea>
-
-                                        <button type="submit" class="form-control">Envoyer</button><br>
+                                        <input class="form-control" type="text" name="description" id="description" value = "<?php echo $demande['Description']; ?>">
+                                        <button type="submit" class="form-control">Modifier</button><br>
                                     </div>
-                                          </form>
-                                </div>
                             </form>
+                                </div>
                         </div>
 
                     </div>
                 </div>
             </section>
-
-        </main>
-
+		<?php
+		}
+		?>
         <footer class="site-footer">
             <div class="container">
                 <div class="row align-items-center">
@@ -211,8 +185,5 @@ https://templatemo.com/tm-575-leadership-event
                 </div>
             </div>
         </footer>
-
-
-
-    </body>
+	</body>
 </html>

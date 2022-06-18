@@ -1,25 +1,18 @@
 <?php
-    include_once '../Model/demande.php';
-    include_once '../Controller/DemandeC.php';
+session_start();
+	include "../controller/DemandeC.php";
+	include_once '../Model/Demande.php';
 
-    $error = "";
+	$demandeC = new DemandeC();
+	$error = "";
 
-    // create user
-    $demande = null;
-
-    // create an instance of the controller
-    $demandeC = new DemandeC();
-    if (
-        isset($_POST["matricule"]) &&
+	if (
+		isset($_POST["matricule"]) &&
         isset($_POST["mois"]) &&
         isset($_POST["type"]) &&
         isset($_POST["description"])
-    ) {
-      $date = DateTime::createFromFormat("Y-m-d", $_POST['mois']);
-      $day = $date->format("d");
-      if (    $demandeC->sommeDemande($_POST["matricule"])<5){
-        if($day<"13"){
-        if (
+	){
+		if (
             !empty($_POST["matricule"]) &&
             !empty($_POST["mois"]) &&
             !empty($_POST["type"]) &&
@@ -29,23 +22,16 @@
                 $_POST['matricule'],
                 $_POST['mois'],
                 $_POST['type'],
-                $_POST['description']
-            );
-    $demandeC->ajouterDemande($demande);
-            header('Location:afficherdemande.php');
+									$_POST['description']
+			);
+
+
+            $demandeC->modifierDemande($demande, $_GET['id']);
+            header('refresh:0;url=afficherDemande.php');
         }
         else
             $error = "Missing information";
-          }else{
-            echo '<script>alert("superieur!")</script>';
-          }
-          }else
-          {
-            echo '<script>alert("maximum 5 demande!")</script>';
-          }
-    }
-
-
+	}
 
 ?>
 <!DOCTYPE html>
@@ -81,6 +67,7 @@
     <link href="css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="css.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+</head>
 	<body>
 		<div class="container-xxl position-relative bg-white d-flex p-0">
 				<!-- Spinner Start -->
@@ -143,51 +130,67 @@
 								</div>
 						</nav>
         <br>
-        <hr>
+				  <br>
 
         <div id="error">
             <?php echo $error; ?>
         </div>
 
-        <form action="" method="POST">
-            <table border="0" align="center">
+		<?php
+			if (isset($_GET['id'])){
+				$demande = $demandeC->recupererDemande($_GET['id']);
 
+		?>
+		<form action="" method="POST">
+            <table align="center">
                 <tr>
 
+                  <!--  <td>
+                        <label for="id">Id:
+                        </label>
+                    </td> -->
+            <!--        <td>
+						<input type="text" name="id" id="id"  value = "<//?php echo $demande['Id']; ?>" disabled> -->
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="matricule">matricule:
+						</label>
+					</td>
+					<td>
+						<input type="text" name="matricule" id="matricule" value = "<?php echo $demande['Matricule']; ?>">
+					</td>
+				</tr>
+                <tr>
                     <td>
-                        <label for="nom">Matricule:
+                        <label for="mois">mois:
                         </label>
                     </td>
-                    <td><input type="text" name="matricule" id="matricule"></td>
+                    <td><input type="date" name="mois" id="mois" value = "<?php echo $demande['Mois']; ?>"></td>
                 </tr>
-                <tr>
-                    <td>
-                        <label for="firstname">mois:
-                        </label>
-                    </td>
-                    <td><input type="date" name="mois" id="mois" ></td>
-                </tr>
 
                 <tr>
                     <td>
-                        <label for="email">type:
+                        <label for="type">type:
                         </label>
                     </td>
                     <td>
-                        <select name="type" id="type">
-  <option value="PNT">PNT</option>
-  <option value="PNC">PNC</option>
+
+												<select name="type" id="type">
+	<option value="<?php echo $demande['Type']; ?>">PNT</option>
+	<option value="<?php echo $demande['Type']; ?>">PNC</option>
 </select>
                     </td>
                 </tr>
                 <tr>
 
                     <td>
-                        <label for="login">description:
+                        <label for="description">description:
                         </label>
                     </td>
                     <td>
-                        <input type="text" name="description" id="description" >
+                        <input type="text" name="description" id="description" value = "<?php echo $demande['Description']; ?>">
                     </td>
                 </tr>
 
@@ -195,7 +198,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="Envoyer">
+                        <input type="submit" value="Modifier" name = "modifer">
                     </td>
                     <td>
                         <input type="reset" value="Annuler" >
@@ -203,6 +206,12 @@
                 </tr>
             </table>
         </form>
+		<?php
+		}
+		?>
+	</body>
+</html>
+<!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="lib/chart/chart.min.js"></script>

@@ -6,14 +6,17 @@
 		private ?string $firstname = null;
 		private ?string $lastname = null;
 		private ?string $corps = null;
+		private ?string $classe = null;
 
-		function __construct(int $matricule,string $mdp, string $firstname, string $lastname, string $corps){
+		function __construct(int $matricule,string $mdp, string $firstname, string $lastname, string $corps, string $classe){
 
 			$this->matricule=$matricule;
-				$this->mdp=$mdp;
+			$this->mdp=$mdp;
 			$this->firstname=$firstname;
 			$this->lastname=$lastname;
 			$this->corps=$corps;
+			$this->classe=$classe;
+
 		}
 
 		function getId(): int{
@@ -34,6 +37,9 @@
 		function getlastname(): string{
 			return $this->lastname;
 		}
+		function getclasse(): string{
+			return $this->classe;
+		}
 
 
 		function setNom(int $matricule): void{
@@ -48,6 +54,10 @@
 		function setlastname(string $lastname): void{
 			$this->lastname=$lastname;
 		}
+		function setclasse(string $classe): void{
+			$this->classe=$classe;
+		}
+
 
 	}
 ?>
